@@ -1,2 +1,3 @@
-# webcam_app
-PyQt5, OpenCV
+# Simple Webcam Application
+- UI: PyQt5
+- OpenCV
