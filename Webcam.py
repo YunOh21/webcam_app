@@ -53,6 +53,22 @@ class WindowClass(QMainWindow, from_class):
         self.btnGray.clicked.connect(self.toGray)
         
         self.btnInit()
+        self.editEnabled(False)  # 편집 기능은 사진이나 영상이 있을 때 활성화
+        
+        
+    def editEnabled(self, bool):
+        # 현재 구현되지 않은 버튼은 비활성화
+        self.btnRed.setEnabled(False)
+        self.btnGreen.setEnabled(False)
+        self.btnBlue.setEnabled(False)
+        self.btnGray.setEnabled(bool)
+        self.btnBinary.setEnabled(False)
+        self.btnBlur.setEnabled(False)
+        self.btnCanny.setEnabled(False)
+        self.btnDraw.setEnabled(False)
+        self.btnCutPhoto.setEnabled(False)
+        self.btnScan.setEnabled(False)
+        self.btnCutVideo.setEnabled(False)
 
     
     def toRed(self):
@@ -160,6 +176,13 @@ class WindowClass(QMainWindow, from_class):
     def cancelPic(self):
         if self.mode == "takePic":
             self.label.clear()
+            # 사진 저장/취소 버튼 안 보이게 하기
+            self.btnSave.hide()
+            self.btnCancel.hide()
+            self.btnRec.show()
+            
+            # 카메라 재시작
+            self.startCamera()
         else:  # self.mode == "editPic"
             self.label.setPixmap(self.pixmap)
             
@@ -190,6 +213,7 @@ class WindowClass(QMainWindow, from_class):
         self.file = QFileDialog.getOpenFileName(filter="Image (*.png *.jpg *.jpeg *.avi)")[0]
         
         if self.file != '':  # 선택 없이 창 닫을 경우 아래 동작x
+            self.editEnabled(True)
             if self.file.lower().endswith(".avi"):  # 영상이면
                 self.video = cv2.VideoCapture(self.file)
 
@@ -259,7 +283,7 @@ class WindowClass(QMainWindow, from_class):
     # 영상 촬영
     def recordingStart(self):
         self.btnRec.setText("REC OFF")
-        self.recLabel.show()
+        
         self.isRecStart = True
         self.recordThread.running = True
         self.recordThread.start()
@@ -272,6 +296,9 @@ class WindowClass(QMainWindow, from_class):
         h = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
         
         self.writer = cv2.VideoWriter(filename, self.fourcc, 20.0, (w, h))
+        
+        self.isRecLabelOn = True
+        self.recLabelTime = 0
         
         
     def recordingStop(self):
@@ -292,6 +319,18 @@ class WindowClass(QMainWindow, from_class):
     def updateRecording(self):
         self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
         self.writer.write(self.image)
+        
+        self.recLabelTime += 1
+        
+        # recordThread가 실행되는 동안 REC 문구 깜빡깜빡
+        if self.recLabelTime == 5 and self.isRecLabelOn:
+            self.recLabelTime = 0
+            self.isRecLabelOn = False
+            self.recLabel.show()
+        elif self.recLabelTime == 5 and self.isRecLabelOn == False:
+            self.recLabelTime = 0
+            self.isRecLabelOn = True
+            self.recLabel.hide()
 
 
 if __name__ == "__main__":
