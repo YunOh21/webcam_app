@@ -559,15 +559,15 @@
     </rect>
    </property>
    <property name="text">
-    <string>REC</string>
+    <string>REC ON</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btnSave">
    <property name="geometry">
     <rect>
-     <x>401</x>
+     <x>406</x>
      <y>521</y>
-     <width>57</width>
+     <width>59</width>
      <height>25</height>
     </rect>
    </property>
@@ -578,9 +578,9 @@
   <widget class="QPushButton" name="btnCancel">
    <property name="geometry">
     <rect>
-     <x>464</x>
+     <x>471</x>
      <y>521</y>
-     <width>56</width>
+     <width>59</width>
      <height>25</height>
     </rect>
    </property>
@@ -598,7 +598,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>PLAY</string>
+    <string>▶</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="groupFilter">
@@ -782,6 +782,19 @@
      <string>Cut</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QPushButton" name="btnSaveAs">
+   <property name="geometry">
+    <rect>
+     <x>341</x>
+     <y>521</y>
+     <width>59</width>
+     <height>25</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Save As</string>
+   </property>
   </widget>
  </widget>
  <resources/>

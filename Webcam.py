@@ -32,15 +32,16 @@ class WindowClass(QMainWindow, from_class):
         self.btnCamera.clicked.connect(self.goCamera)
         self.btnGallery.clicked.connect(self.goGallery)
         self.btnPhoto.clicked.connect(self.takePic)
+        self.btnSaveAs.clicked.connect(self.savePicAs)
         self.btnSave.clicked.connect(self.savePic)
         self.btnCancel.clicked.connect(self.cancelPic)
         self.btnPlay.clicked.connect(self.playVideo)
         self.btnRec.clicked.connect(self.recVideo)
         
         # 필터
-        self.btnRed.clicked.connect(self.toRed)
-        self.btnGreen.clicked.connect(self.toGreen)
-        self.btnBlue.clicked.connect(self.toBlue)
+        self.btnRed.clicked.connect(self.toRed)  # to do
+        self.btnGreen.clicked.connect(self.toGreen)  # to do
+        self.btnBlue.clicked.connect(self.toBlue)  # to do
         self.btnGray.clicked.connect(self.toGray)
         
         self.btnInit()
@@ -59,14 +60,15 @@ class WindowClass(QMainWindow, from_class):
         
         
     def toGray(self):
-        self.qimage_edited = self.qimage.convertToFormat(QImage.Format_Grayscale8)
+        self.qimage_edited = self.qimage.convertToFormat(QImage.Format_Grayscale16)
         self.pixmap_edited_org = self.pixmap.fromImage(self.qimage_edited)
         self.pixmap_edited = self.pixmap_edited_org.scaled(self.label.width(), self.label.height())
         self.label.setPixmap(self.pixmap_edited)
         
         # 저장, 취소 버튼 표출
-        self.btnSave.show()  # 취소 시 원본 이미지로 돌아감
-        self.btnCancel.show()  # 저장 시 현재 이미지를 저장
+        self.btnSaveAs.show()  # 저장 시 현재 이미지를 새 파일로 저장(단, 사이즈 변형은 x)
+        self.btnSave.show()  # 저장 시 기존 파일을 현재 이미지로 변경(단, 사이즈 변형은 x)
+        self.btnCancel.show()  # 취소 시 원본 이미지로 돌아감
         
         self.mode = "editPic"
         
@@ -78,6 +80,7 @@ class WindowClass(QMainWindow, from_class):
         self.btnHome.hide()
         self.btnPhoto.hide()
         self.btnVideo.hide()
+        self.btnSaveAs.hide()
         self.btnSave.hide()
         self.btnCancel.hide()
         self.btnRec.hide()
@@ -129,14 +132,21 @@ class WindowClass(QMainWindow, from_class):
         
         
     def savePic(self):
+        if self.mode == "takePic":
+            self.now = dt.now().strftime("%Y%m%d_%H%M%S%f")
+            filename = self.now + ".png"
+            name = QFileDialog.getSaveFileName(self, "Save Image", "./" + filename)[0]
+            self.pixmap.save(name)
+        else:  # self.mode == "editPic"
+            self.pixmap_edited_org.save(self.file)  # 원본 파일 덮어쓰기
+            
+            
+    def savePicAs(self):
         self.now = dt.now().strftime("%Y%m%d_%H%M%S%f")
         filename = self.now + ".png"
         name = QFileDialog.getSaveFileName(self, "Save Image", "./" + filename)[0]
-        
-        if self.mode == "takePic":
-            self.pixmap.save(name)
-        else:  # self.mode == "editPic"
-            self.pixmap_edited_org.save(name)
+
+        self.pixmap_edited_org.save(name)
         
         
     def cancelPic(self):
@@ -177,25 +187,26 @@ class WindowClass(QMainWindow, from_class):
         self.btnRec.hide()
         
         # 이미지와 사진 모두 인식
-        file = QFileDialog.getOpenFileName(filter="Image (*.png *.jpg *.jpeg *.avi)")[0]
+        self.file = QFileDialog.getOpenFileName(filter="Image (*.png *.jpg *.jpeg *.avi)")[0]
+        
+        if self.file != '':  # 선택 없이 창 닫을 경우 아래 동작x
+            if self.file.lower().endswith(".avi"):  # 영상이면
+                self.video = cv2.VideoCapture(self.file)
 
-        if file.lower().endswith(".avi"):  # 영상이면
-            self.video = cv2.VideoCapture(file)
+                if self.video.isOpened():  # VideoCapture 인스턴스 생성 확인
+                    self.showThumbnail()
+                    
+            else:  # 이미지이면
+                image = cv2.imread(self.file)
+                image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-            if self.video.isOpened():  # VideoCapture 인스턴스 생성 확인
-                self.showThumbnail()
-                
-        else:  # 이미지이면
-            image = cv2.imread(file)
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+                h, w, c = image.shape
+                self.qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
 
-            h, w, c = image.shape
-            self.qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
+                self.pixmap = self.pixmap.fromImage(self.qimage)
+                self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
 
-            self.pixmap = self.pixmap.fromImage(self.qimage)
-            self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
-
-            self.label.setPixmap(self.pixmap)
+                self.label.setPixmap(self.pixmap)
             
             
     def showThumbnail(self):
@@ -204,9 +215,9 @@ class WindowClass(QMainWindow, from_class):
         if ret:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
-            height, width, channel = frame.shape
-            bytes_per_line = 3 * width
-            self.qimage = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            h, w, c = frame.shape
+            bytes_per_line = 3 * w
+            self.qimage = QImage(frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
 
             self.pixmap = QPixmap.fromImage(self.qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
@@ -217,10 +228,15 @@ class WindowClass(QMainWindow, from_class):
                 
                 
     def playVideo(self):
-        while True:
+        isVideoEnd = False
+        self.btnRec.setText("❚❚")
+        
+        while isVideoEnd == False:
             ret, frame = self.video.read()
             
             if not ret:
+                isVideoEnd = True
+                self.btnRec.setText("▶")
                 break
             
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
