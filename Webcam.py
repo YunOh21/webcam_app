@@ -221,6 +221,8 @@ class WindowClass(QMainWindow, from_class):
                     self.showThumbnail()
                     
             else:  # 이미지이면
+                self.btnPlay.hide()
+                
                 image = cv2.imread(self.file)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
