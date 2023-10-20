@@ -23,20 +23,28 @@ class WindowClass(QMainWindow, from_class):
         
         self.pixmap = QPixmap()
         
+        # 카메라 보이기
         self.cameraThread = CameraThread(self)
         self.cameraThread.daemon = True
         self.cameraThread.update.connect(self.showCamera)
+        
+        # 영상 촬영
+        self.recordThread = CameraThread(self)
+        self.recordThread.daemon = True
+        self.recordThread.update.connect(self.updateRecording)
         
         # 기본 기능
         self.btnHome.clicked.connect(self.goHome)
         self.btnCamera.clicked.connect(self.goCamera)
         self.btnGallery.clicked.connect(self.goGallery)
         self.btnPhoto.clicked.connect(self.takePic)
+        self.btnRec.clicked.connect(self.takeVideo)
+        
         self.btnSaveAs.clicked.connect(self.savePicAs)
         self.btnSave.clicked.connect(self.savePic)
         self.btnCancel.clicked.connect(self.cancelPic)
+        
         self.btnPlay.clicked.connect(self.playVideo)
-        self.btnRec.clicked.connect(self.recVideo)
         
         # 필터
         self.btnRed.clicked.connect(self.toRed)  # to do
@@ -79,11 +87,10 @@ class WindowClass(QMainWindow, from_class):
         self.btnGallery.show()
         self.btnHome.hide()
         self.btnPhoto.hide()
-        self.btnVideo.hide()
+        self.btnRec.hide()
         self.btnSaveAs.hide()
         self.btnSave.hide()
         self.btnCancel.hide()
-        self.btnRec.hide()
         self.btnPlay.hide()
         self.recLabel.hide()
         
@@ -124,7 +131,7 @@ class WindowClass(QMainWindow, from_class):
         self.stopCamera()
         
         # 비디오는 지우고 home, save, cancel만 보이게
-        self.btnVideo.hide()
+        self.btnRec.hide()
         self.btnSave.show()
         self.btnCancel.show()
         
@@ -154,23 +161,16 @@ class WindowClass(QMainWindow, from_class):
             self.label.clear()
         else:  # self.mode == "editPic"
             self.label.setPixmap(self.pixmap)
-    
-    
-    def takeVideo(self):
-        self.isRecStart = True
-        self.recLabel.show()
-        self.recordingStart()
             
     
     def goCamera(self):
         # 홈, 사진, 영상 버튼만 보이게
         self.btnHome.show()
         self.btnPhoto.show()
-        self.btnVideo.show()
+        self.btnRec.show()
         
         self.btnCamera.hide()
         self.btnGallery.hide()
-        self.btnRec.hide()
         
         self.startCamera()
         
@@ -182,9 +182,8 @@ class WindowClass(QMainWindow, from_class):
         self.btnGallery.show()  # 다른 파일을 열어보고 싶을 수 있음
         
         self.btnPhoto.hide()
-        self.btnVideo.hide()
-        self.btnCamera.hide()
         self.btnRec.hide()
+        self.btnCamera.hide()
         
         # 이미지와 사진 모두 인식
         self.file = QFileDialog.getOpenFileName(filter="Image (*.png *.jpg *.jpeg *.avi)")[0]
@@ -229,14 +228,14 @@ class WindowClass(QMainWindow, from_class):
                 
     def playVideo(self):
         isVideoEnd = False
-        self.btnRec.setText("❚❚")
+        self.btnPlay.setText("❚❚")  # to-do: 일시정지
         
         while isVideoEnd == False:
             ret, frame = self.video.read()
             
             if not ret:
                 isVideoEnd = True
-                self.btnRec.setText("▶")
+                self.btnPlay.setText("▶")
                 break
             
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -255,14 +254,50 @@ class WindowClass(QMainWindow, from_class):
 
         self.video.release()
         
+    
+    # 영상 촬영
+    def recordingStart(self):
+        self.recordThread.running = True
+        self.recordThread.start()
         
-    def recVideo(self):
+        self.now = dt.now().strftime("%Y%m%d_%H%M%S")
+        filename = self.now + ".avi"
+        self.fourcc = cv2.VideoWriter_fourcc(*"XVID")
+        
+        w = int(self.video.get(cv2.CAP_PROP_FRAME_WIDTH))
+        h = int(self.video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        
+        self.writer = cv2.VideoWriter(filename, self.fourcc, 20.0, (w, h))
+        
+        
+    def recordingStop(self):
+        self.recordThread.running = False
+        
+        if self.isRecStart == True:
+            self.writer.release()
+        
+        
+    def takeVideo(self):
         if self.isRecStart == False:
-            self.isRecStart = True
+            self.btnRec.setText("REC OFF")
             self.recLabel.show()
+            self.isRecStart = True
+            
+            self.recordingStart()
         else:
-            self.isRecStart = False
+            self.btnRec.setText("REC ON")
             self.recLabel.hide()
+            self.isRecStart = False
+            
+            self.recordingStop()
+        
+        self.isRecStart = True        
+        self.recordingStart()
+        
+        
+    def updateRecording(self):
+        self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
+        self.writer.write(self.image)
 
 
 if __name__ == "__main__":
