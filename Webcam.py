@@ -117,7 +117,8 @@ class WindowClass(QMainWindow, from_class):
     
     def goHome(self):
         self.btnInit()
-        self.stopCamera()
+        if self.isCameraOn:
+            self.stopCamera()
         self.label.clear()
         
         
@@ -257,6 +258,9 @@ class WindowClass(QMainWindow, from_class):
     
     # 영상 촬영
     def recordingStart(self):
+        self.btnRec.setText("REC OFF")
+        self.recLabel.show()
+        self.isRecStart = True
         self.recordThread.running = True
         self.recordThread.start()
         
@@ -271,28 +275,18 @@ class WindowClass(QMainWindow, from_class):
         
         
     def recordingStop(self):
+        self.btnRec.setText("REC ON")
+        self.recLabel.hide()
         self.recordThread.running = False
-        
-        if self.isRecStart == True:
-            self.writer.release()
+        self.isRecStart = False
+        self.writer.release()
         
         
     def takeVideo(self):
         if self.isRecStart == False:
-            self.btnRec.setText("REC OFF")
-            self.recLabel.show()
-            self.isRecStart = True
-            
             self.recordingStart()
         else:
-            self.btnRec.setText("REC ON")
-            self.recLabel.hide()
-            self.isRecStart = False
-            
             self.recordingStop()
-        
-        self.isRecStart = True        
-        self.recordingStart()
         
         
     def updateRecording(self):
