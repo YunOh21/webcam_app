@@ -5,6 +5,7 @@ from PyQt5 import uic
 
 import sys
 import cv2, imutils
+import numpy as np
 from datetime import datetime as dt
 
 from CameraThread import *
@@ -26,6 +27,7 @@ class WindowClass(QMainWindow, from_class):
         self.cameraThread.daemon = True
         self.cameraThread.update.connect(self.showCamera)
         
+        # 기본 기능
         self.btnHome.clicked.connect(self.goHome)
         self.btnCamera.clicked.connect(self.goCamera)
         self.btnGallery.clicked.connect(self.goGallery)
@@ -35,7 +37,38 @@ class WindowClass(QMainWindow, from_class):
         self.btnPlay.clicked.connect(self.playVideo)
         self.btnRec.clicked.connect(self.recVideo)
         
+        # 필터
+        self.btnRed.clicked.connect(self.toRed)
+        self.btnGreen.clicked.connect(self.toGreen)
+        self.btnBlue.clicked.connect(self.toBlue)
+        self.btnGray.clicked.connect(self.toGray)
+        
         self.btnInit()
+
+    
+    def toRed(self):
+        print("red")
+        
+        
+    def toGreen(self):
+        print("green")
+        
+        
+    def toBlue(self):
+        print("blue")
+        
+        
+    def toGray(self):
+        self.qimage_edited = self.qimage.convertToFormat(QImage.Format_Grayscale8)
+        self.pixmap_edited_org = self.pixmap.fromImage(self.qimage_edited)
+        self.pixmap_edited = self.pixmap_edited_org.scaled(self.label.width(), self.label.height())
+        self.label.setPixmap(self.pixmap_edited)
+        
+        # 저장, 취소 버튼 표출
+        self.btnSave.show()  # 취소 시 원본 이미지로 돌아감
+        self.btnCancel.show()  # 저장 시 현재 이미지를 저장
+        
+        self.mode = "editPic"
         
         
     def btnInit(self):
@@ -45,7 +78,6 @@ class WindowClass(QMainWindow, from_class):
         self.btnHome.hide()
         self.btnPhoto.hide()
         self.btnVideo.hide()
-        self.btnEdit.hide()
         self.btnSave.hide()
         self.btnCancel.hide()
         self.btnRec.hide()
@@ -59,9 +91,9 @@ class WindowClass(QMainWindow, from_class):
             self.image = cv2.cvtColor(self.image, cv2.COLOR_BGR2RGB)
             
             h, w, c = self.image.shape
-            qimage = QImage(self.image.data, w, h, w*c, QImage.Format_RGB888)
+            self.qimage = QImage(self.image.data, w, h, w*c, QImage.Format_RGB888)
             
-            self.pixmap = self.pixmap.fromImage(qimage)
+            self.pixmap = self.pixmap.fromImage(self.qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
             
             self.label.setPixmap(self.pixmap)
@@ -93,16 +125,25 @@ class WindowClass(QMainWindow, from_class):
         self.btnSave.show()
         self.btnCancel.show()
         
+        self.mode = "takePic"
+        
         
     def savePic(self):
         self.now = dt.now().strftime("%Y%m%d_%H%M%S%f")
         filename = self.now + ".png"
-        name = QFileDialog.getSaveFileName(self, "Save Image", "./" + filename)
-        self.pixmap.save(name[0])
+        name = QFileDialog.getSaveFileName(self, "Save Image", "./" + filename)[0]
+        
+        if self.mode == "takePic":
+            self.pixmap.save(name)
+        else:  # self.mode == "editPic"
+            self.pixmap_edited_org.save(name)
         
         
     def cancelPic(self):
-        self.label.clear()
+        if self.mode == "takePic":
+            self.label.clear()
+        else:  # self.mode == "editPic"
+            self.label.setPixmap(self.pixmap)
     
     
     def takeVideo(self):
@@ -120,7 +161,6 @@ class WindowClass(QMainWindow, from_class):
         self.btnCamera.hide()
         self.btnGallery.hide()
         self.btnRec.hide()
-        self.btnEdit.hide()
         
         self.startCamera()
         
@@ -130,7 +170,6 @@ class WindowClass(QMainWindow, from_class):
         # 홈, 편집 버튼만 보이게
         self.btnHome.show()
         self.btnGallery.show()  # 다른 파일을 열어보고 싶을 수 있음
-        self.btnEdit.show()
         
         self.btnPhoto.hide()
         self.btnVideo.hide()
@@ -151,9 +190,9 @@ class WindowClass(QMainWindow, from_class):
             image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
             h, w, c = image.shape
-            qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
+            self.qimage = QImage(image.data, w, h, w*c, QImage.Format_RGB888)
 
-            self.pixmap = self.pixmap.fromImage(qimage)
+            self.pixmap = self.pixmap.fromImage(self.qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
 
             self.label.setPixmap(self.pixmap)
@@ -167,9 +206,9 @@ class WindowClass(QMainWindow, from_class):
             
             height, width, channel = frame.shape
             bytes_per_line = 3 * width
-            q_image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            self.qimage = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
 
-            self.pixmap = QPixmap.fromImage(q_image)
+            self.pixmap = QPixmap.fromImage(self.qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
             
             self.label.setPixmap(self.pixmap)
@@ -186,11 +225,11 @@ class WindowClass(QMainWindow, from_class):
             
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             
-            height, width, channel = frame.shape
-            bytes_per_line = 3 * width
-            q_image = QImage(frame.data, width, height, bytes_per_line, QImage.Format_RGB888)
+            h, w, c = frame.shape
+            bytes_per_line = 3 * w
+            self.qimage = QImage(frame.data, w, h, bytes_per_line, QImage.Format_RGB888)
 
-            self.pixmap = QPixmap.fromImage(q_image)
+            self.pixmap = QPixmap.fromImage(self.qimage)
             self.pixmap = self.pixmap.scaled(self.label.width(), self.label.height())
             
             self.label.setPixmap(self.pixmap)
