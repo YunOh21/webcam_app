@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>832</width>
+    <width>696</width>
     <height>550</height>
    </rect>
   </property>
@@ -16,10 +16,10 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>110</x>
+     <x>20</x>
      <y>50</y>
-     <width>651</width>
-     <height>471</height>
+     <width>501</width>
+     <height>461</height>
     </rect>
    </property>
    <property name="text">
@@ -29,9 +29,9 @@
   <widget class="QPushButton" name="btnCamera">
    <property name="geometry">
     <rect>
-     <x>141</x>
+     <x>134</x>
      <y>11</y>
-     <width>68</width>
+     <width>59</width>
      <height>25</height>
     </rect>
    </property>
@@ -42,9 +42,9 @@
   <widget class="QPushButton" name="btnGallery">
    <property name="geometry">
     <rect>
-     <x>215</x>
+     <x>199</x>
      <y>11</y>
-     <width>68</width>
+     <width>60</width>
      <height>25</height>
     </rect>
    </property>
@@ -55,9 +55,9 @@
   <widget class="QPushButton" name="btnHome">
    <property name="geometry">
     <rect>
-     <x>67</x>
+     <x>68</x>
      <y>11</y>
-     <width>68</width>
+     <width>60</width>
      <height>25</height>
     </rect>
    </property>
@@ -68,7 +68,7 @@
   <widget class="QLabel" name="recLabel">
    <property name="geometry">
     <rect>
-     <x>21</x>
+     <x>22</x>
      <y>11</y>
      <width>40</width>
      <height>18</height>
@@ -526,9 +526,9 @@
   <widget class="QPushButton" name="btnPhoto">
    <property name="geometry">
     <rect>
-     <x>289</x>
+     <x>265</x>
      <y>11</y>
-     <width>68</width>
+     <width>59</width>
      <height>25</height>
     </rect>
    </property>
@@ -539,9 +539,9 @@
   <widget class="QPushButton" name="btnVideo">
    <property name="geometry">
     <rect>
-     <x>363</x>
+     <x>330</x>
      <y>11</y>
-     <width>68</width>
+     <width>60</width>
      <height>25</height>
     </rect>
    </property>
@@ -549,25 +549,12 @@
     <string>Video</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="btnEdit">
-   <property name="geometry">
-    <rect>
-     <x>437</x>
-     <y>11</y>
-     <width>68</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Edit</string>
-   </property>
-  </widget>
   <widget class="QPushButton" name="btnRec">
    <property name="geometry">
     <rect>
-     <x>732</x>
+     <x>461</x>
      <y>11</y>
-     <width>68</width>
+     <width>60</width>
      <height>25</height>
     </rect>
    </property>
@@ -578,9 +565,9 @@
   <widget class="QPushButton" name="btnSave">
    <property name="geometry">
     <rect>
-     <x>511</x>
-     <y>11</y>
-     <width>68</width>
+     <x>401</x>
+     <y>521</y>
+     <width>57</width>
      <height>25</height>
     </rect>
    </property>
@@ -591,9 +578,9 @@
   <widget class="QPushButton" name="btnCancel">
    <property name="geometry">
     <rect>
-     <x>585</x>
-     <y>11</y>
-     <width>68</width>
+     <x>464</x>
+     <y>521</y>
+     <width>56</width>
      <height>25</height>
     </rect>
    </property>
@@ -604,15 +591,197 @@
   <widget class="QPushButton" name="btnPlay">
    <property name="geometry">
     <rect>
-     <x>659</x>
+     <x>396</x>
      <y>11</y>
-     <width>67</width>
+     <width>59</width>
      <height>25</height>
     </rect>
    </property>
    <property name="text">
     <string>PLAY</string>
    </property>
+  </widget>
+  <widget class="QGroupBox" name="groupFilter">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>10</y>
+     <width>131</width>
+     <height>261</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Filter</string>
+   </property>
+   <widget class="QPushButton" name="btnRed">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Red</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnGreen">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>70</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Green</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnBlue">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>100</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Blue</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnGray">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>130</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Gray</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnBinary">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>160</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Binary</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnBlur">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>190</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Blur</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnCanny">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>220</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Canny</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupEdit">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>290</y>
+     <width>131</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Edit: Photo</string>
+   </property>
+   <widget class="QPushButton" name="btnDraw">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>30</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Draw</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnCutPhoto">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>60</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cut</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="btnScan">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>90</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Scan</string>
+    </property>
+   </widget>
+  </widget>
+  <widget class="QGroupBox" name="groupVideo">
+   <property name="geometry">
+    <rect>
+     <x>550</x>
+     <y>430</y>
+     <width>131</width>
+     <height>81</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string>Edit: Video</string>
+   </property>
+   <widget class="QPushButton" name="btnCutVideo">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>40</y>
+      <width>89</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Cut</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
