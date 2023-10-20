@@ -44,7 +44,7 @@ class WindowClass(QMainWindow, from_class):
         self.btnSave.clicked.connect(self.savePic)
         self.btnCancel.clicked.connect(self.cancelPic)
         
-        self.btnPlay.clicked.connect(self.playVideo)
+        self.btnPlayControl.clicked.connect(self.controlVideo)
         
         # 필터
         self.btnRed.clicked.connect(self.toRed)  # to do
@@ -107,7 +107,7 @@ class WindowClass(QMainWindow, from_class):
         self.btnSaveAs.hide()
         self.btnSave.hide()
         self.btnCancel.hide()
-        self.btnPlay.hide()
+        self.btnPlayControl.hide()
         self.recLabel.hide()
         
         
@@ -221,7 +221,7 @@ class WindowClass(QMainWindow, from_class):
                     self.showThumbnail()
                     
             else:  # 이미지이면
-                self.btnPlay.hide()
+                self.btnPlayControl.hide()
                 
                 image = cv2.imread(self.file)
                 image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -250,19 +250,27 @@ class WindowClass(QMainWindow, from_class):
             
             self.label.setPixmap(self.pixmap)
             
-        self.btnPlay.show()
+        self.btnPlayControl.show()
+        self.btnPlayControl.setText("▶") 
                 
                 
+    def controlVideo(self):
+        if self.btnPlayControl.text() == "▶":
+            self.playVideo()
+        else:
+            self.pauseVideo()
+    
+    
     def playVideo(self):
-        isVideoEnd = False
-        self.btnPlay.setText("❚❚")  # to-do: 일시정지
+        self.isVideoEnd = False
+        self.btnPlayControl.setText("❚❚")  # to-do: 일시정지
         
-        while isVideoEnd == False:
+        while self.isVideoEnd == False:
             ret, frame = self.video.read()
             
             if not ret:
-                isVideoEnd = True
-                self.btnPlay.setText("▶")
+                self.isVideoEnd = True
+                self.btnPlayControl.setText("▶")
                 break
             
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -281,6 +289,10 @@ class WindowClass(QMainWindow, from_class):
 
         self.video.release()
         
+        
+    def pauseVideo(self):
+        self.isVideoEnd = True
+        self.btnPlayControl.setText("▶")
     
     # 영상 촬영
     def recordingStart(self):
